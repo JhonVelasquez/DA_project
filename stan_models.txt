@@ -1,0 +1,105 @@
+//
+
+
+generated quantities {
+   real alpha = normal_rng(29,0.5);
+   real beta = normal_rng(12,0.5);
+   real life_exp = beta_rng(alpha,beta);
+}
+
+
+//
+
+
+generated quantities {
+   real mu_1 = normal_rng(0.72,0.2);
+   real sigma_1 = normal_rng(0.05,0.02);
+
+   real mu_2 = normal_rng(0.58,0.02);
+   real sigma_2 = normal_rng(0.13,0.04);
+
+   real life_exp;
+   real p = bernoulli_rng(0.7);
+   
+   if(p==1){
+      life_exp=gumbel_rng(mu_1,sigma_1);
+   }else{
+      life_exp=normal_rng(mu_2,sigma_2);
+   }
+}
+
+
+//
+
+
+generated quantities {
+   real mu_1 = normal_rng(75,0.5);
+   real sigma_1 = normal_rng(1,0.05);
+
+   real alpha = normal_rng(4,0.1);
+   real beta = normal_rng(8,0.1);
+
+   real life_exp;
+   real p = bernoulli_rng(0.3);
+   
+   if(p==1){
+      life_exp=gumbel_rng(mu_1,sigma_1);
+   }else{
+      life_exp=51+beta_rng(alpha,beta)*45;
+   }
+}
+
+
+//
+
+
+data{
+    int N;
+    real<lower=0,upper=1> life_exps[N];
+}
+
+parameters{
+    real mu;
+    real sigma;
+}
+
+model{
+    mu ~ normal(0.6,0.2);
+    sigma ~ normal(0.15,0.05);
+    life_exps ~ normal(mu,sigma);
+}
+
+generated quantities {
+   real<lower=0,upper=1> life_exp_generated = normal_rng(mu,sigma);
+}
+
+
+
+
+
+//
+
+
+data{
+    int N;
+    real<lower=0,upper=1> life_exps[N];
+}
+
+parameters{
+    real alpha;
+    real<lower=0> beta;
+}
+
+model{
+    alpha ~ normal(9,2);
+    beta ~ normal(0.07,0.02);
+    life_exps ~ gamma(alpha,1/beta);
+}
+
+generated quantities {
+   real<lower=0,upper=1> life_exp_generated =  gamma_rng(alpha,1/beta);
+}
+
+
+
+//
